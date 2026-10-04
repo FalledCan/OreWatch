@@ -1,4 +1,4 @@
-package com.github.falledcan.block_xray;
+package com.github.falledcan.orewatch;
 
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ClickEvent;
@@ -12,13 +12,13 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-public class XrayCmd implements CommandExecutor {
+public class OreWatchCommand implements CommandExecutor {
 
-    private final Block_Xray plugin;
-    private final XrayManager manager;
+    private final OreWatch plugin;
+    private final GlowManager manager;
     private final Messages messages;
 
-    XrayCmd(Block_Xray plugin, XrayManager manager, Messages messages) {
+    OreWatchCommand(OreWatch plugin, GlowManager manager, Messages messages) {
         this.plugin = plugin;
         this.manager = manager;
         this.messages = messages;
@@ -27,7 +27,7 @@ public class XrayCmd implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (args.length == 1 && args[0].equalsIgnoreCase("reload")) {
-            if (!sender.hasPermission("blockxray.reload")) {
+            if (!sender.hasPermission("orewatch.reload")) {
                 sender.sendMessage(messages.prefixed(sender, "no-permission"));
                 return true;
             }
@@ -81,7 +81,7 @@ public class XrayCmd implements CommandExecutor {
             String name = messages.oreName(player, type);
             line.append(button(
                     (on ? ChatColor.GREEN + "■ " : ChatColor.DARK_GRAY + "□ ") + oreLabel(player, type),
-                    "/xray " + type.id + " menu",
+                    "/orewatch " + type.id + " menu",
                     messages.get(player, on ? "menu-hover-disable" : "menu-hover-enable", name)));
             line.append("   ", ComponentBuilder.FormatRetention.NONE);
             if (++count % 4 == 0) {
@@ -94,10 +94,10 @@ public class XrayCmd implements CommandExecutor {
         }
 
         player.spigot().sendMessage(new ComponentBuilder()
-                .append(button(messages.get(player, "button-all-on"), "/xray all menu",
+                .append(button(messages.get(player, "button-all-on"), "/orewatch all menu",
                         messages.get(player, "hover-all-on")))
                 .append("  ", ComponentBuilder.FormatRetention.NONE)
-                .append(button(messages.get(player, "button-all-off"), "/xray off menu",
+                .append(button(messages.get(player, "button-all-off"), "/orewatch off menu",
                         messages.get(player, "hover-all-off")))
                 .create());
     }

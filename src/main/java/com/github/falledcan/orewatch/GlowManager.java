@@ -1,4 +1,4 @@
-package com.github.falledcan.block_xray;
+package com.github.falledcan.orewatch;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -25,24 +25,24 @@ import java.util.UUID;
  * 鉱石の位置に「発光する BlockDisplay」を出し、有効にした本人だけに見せる。
  * 発光の輪郭は壁越しにも見えるので、地中の鉱石の位置がわかる。
  */
-public class XrayManager {
+public class GlowManager {
 
     /** 異常終了時などに残ったエンティティを掃除するための目印 */
-    static final String ENTITY_TAG = "block_xray";
+    static final String ENTITY_TAG = "orewatch";
 
     // 本物のブロックとちらつかないよう、ほんの少しだけ大きくする
     private static final Transformation TRANSFORMATION = new Transformation(
             new Vector3f(-0.0025f, -0.0025f, -0.0025f), new AxisAngle4f(),
             new Vector3f(1.005f, 1.005f, 1.005f), new AxisAngle4f());
 
-    private final Block_Xray plugin;
+    private final OreWatch plugin;
     private final Map<UUID, Session> sessions = new HashMap<>();
     private BukkitTask task;
 
     private int radius;
     private int maxDisplays;
 
-    XrayManager(Block_Xray plugin) {
+    GlowManager(OreWatch plugin) {
         this.plugin = plugin;
     }
 

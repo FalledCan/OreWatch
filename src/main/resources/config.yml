@@ -3,7 +3,7 @@
 #          follow each player's game language (falls back to English)
 #   ja   : 日本語
 #   en   : English
-# 文は plugins/Block_Xray/lang/ の中のファイルで変更できます
+# 文は plugins/OreWatch/lang/ の中のファイルで変更できます
 language: auto
 
 # 鉱石を探す範囲 (プレイヤーを中心とした半径・ブロック数)

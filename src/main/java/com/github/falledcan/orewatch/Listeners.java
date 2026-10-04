@@ -1,4 +1,4 @@
-package com.github.falledcan.block_xray;
+package com.github.falledcan.orewatch;
 
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -8,9 +8,9 @@ import org.bukkit.event.player.PlayerQuitEvent;
 
 public class Listeners implements Listener {
 
-    private final XrayManager manager;
+    private final GlowManager manager;
 
-    Listeners(XrayManager manager) {
+    Listeners(GlowManager manager) {
         this.manager = manager;
     }
 

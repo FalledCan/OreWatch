@@ -1,4 +1,4 @@
-package com.github.falledcan.block_xray;
+package com.github.falledcan.orewatch;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -15,7 +15,7 @@ import java.util.Locale;
 import java.util.Map;
 
 /**
- * plugins/Block_Xray/lang/*.yml からメッセージを読む。
+ * plugins/OreWatch/lang/*.yml からメッセージを読む。
  * config.yml の language が auto のときは、プレイヤーのゲームの言語設定に合わせる。
  */
 public class Messages {
@@ -23,11 +23,11 @@ public class Messages {
     private static final String[] LANGUAGES = {"ja", "en"};
     private static final String FALLBACK = "en";
 
-    private final Block_Xray plugin;
+    private final OreWatch plugin;
     private final Map<String, YamlConfiguration> languages = new HashMap<>();
     private String language;
 
-    Messages(Block_Xray plugin) {
+    Messages(OreWatch plugin) {
         this.plugin = plugin;
     }
 

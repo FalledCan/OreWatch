@@ -1,4 +1,4 @@
-package com.github.falledcan.block_xray;
+package com.github.falledcan.orewatch;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Color;

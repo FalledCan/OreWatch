@@ -1,4 +1,4 @@
-package com.github.falledcan.block_xray;
+package com.github.falledcan.orewatch;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class XrayCmdTab implements TabCompleter {
+public class OreWatchTabCompleter implements TabCompleter {
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String label, String[] args) {
         if (args.length == 1) {
@@ -19,7 +19,7 @@ public class XrayCmdTab implements TabCompleter {
             }
             options.add("all");
             options.add("off");
-            if (sender.hasPermission("blockxray.reload")) {
+            if (sender.hasPermission("orewatch.reload")) {
                 options.add("reload");
             }
             return StringUtil.copyPartialMatches(args[0], options, new ArrayList<>());

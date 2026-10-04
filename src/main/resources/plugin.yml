@@ -1,18 +1,20 @@
-name: Block_Xray
+name: OreWatch
 version: '${project.version}'
-main: com.github.falledcan.block_xray.Block_Xray
+main: com.github.falledcan.orewatch.OreWatch
 api-version: '1.19'
 authors: [ falled_can ]
-description: This is for monitoring and please do not abuse it
+description: Admin tool that makes nearby ores glow, to help catch X-ray cheaters
+website: https://github.com/FalledCan/OreWatch
 commands:
-  xray:
-    description: 周囲の鉱石を発光させて表示します (管理者用)
-    usage: /xray [鉱石|all|off|reload]
-    permission: blockxray.use
+  orewatch:
+    description: Toggle glowing ores around you (admin only)
+    usage: /orewatch [ore|all|off|reload]
+    aliases: [ xray, ow ]
+    permission: orewatch.use
 permissions:
-  blockxray.use:
-    description: /xray を使用できる
+  orewatch.use:
+    description: Allows using /orewatch
     default: op
-  blockxray.reload:
-    description: /xray reload を使用できる
+  orewatch.reload:
+    description: Allows using /orewatch reload
     default: op
