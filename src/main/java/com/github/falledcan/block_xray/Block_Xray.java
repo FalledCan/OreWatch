@@ -1,42 +1,36 @@
 package com.github.falledcan.block_xray;
 
-import com.github.fierioziy.particlenativeapi.api.ParticleNativeAPI;
-import com.github.fierioziy.particlenativeapi.core.ParticleNativeCore;
 import org.bukkit.plugin.java.JavaPlugin;
-
-import java.util.ArrayList;
 
 public final class Block_Xray extends JavaPlugin {
 
-    static Block_Xray plugin;
-    static ParticleNativeAPI particleApi;
-
-    static ArrayList<String> d_p = new ArrayList<>();
-    static ArrayList<String> i_p = new ArrayList<>();
-    static ArrayList<String> g_p = new ArrayList<>();
-    static ArrayList<String> r_p = new ArrayList<>();
-    static ArrayList<String> e_p = new ArrayList<>();
-
+    private XrayManager manager;
+    private Messages messages;
 
     @Override
     public void onEnable() {
-        plugin = this;
-        particleApi = ParticleNativeCore.loadAPI(this);
-        getServer().getPluginManager().registerEvents(new Listeners(),this);
-        getCommand("xray").setExecutor(new XrayCmd());
+        saveDefaultConfig();
+
+        messages = new Messages(this);
+        manager = new XrayManager(this);
+        manager.removeLeftovers();
+        reload();
+
+        getServer().getPluginManager().registerEvents(new Listeners(manager), this);
+        getCommand("xray").setExecutor(new XrayCmd(this, manager, messages));
         getCommand("xray").setTabCompleter(new XrayCmdTab());
-        new Run().onRun();
-
-        // Plugin startup logic
-
     }
 
-    static Block_Xray getPlugin(){
-        return plugin;
+    void reload() {
+        reloadConfig();
+        messages.load();
+        manager.start();
     }
 
     @Override
     public void onDisable() {
-        // Plugin shutdown logic
+        if (manager != null) {
+            manager.shutdown();
+        }
     }
 }

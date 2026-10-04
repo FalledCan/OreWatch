@@ -1,93 +1,115 @@
 package com.github.falledcan.block_xray;
 
+import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ClickEvent;
+import net.md_5.bungee.api.chat.ComponentBuilder;
+import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
-import net.md_5.bungee.chat.TextComponentSerializer;
+import net.md_5.bungee.api.chat.hover.content.Text;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import java.awt.*;
-
 public class XrayCmd implements CommandExecutor {
+
+    private final Block_Xray plugin;
+    private final XrayManager manager;
+    private final Messages messages;
+
+    XrayCmd(Block_Xray plugin, XrayManager manager, Messages messages) {
+        this.plugin = plugin;
+        this.manager = manager;
+        this.messages = messages;
+    }
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        if(sender instanceof Player){
-            Player player = ((Player) sender).getPlayer();
-
-            if(args.length == 1) {
-
-                switch (args[0]) {
-                    case "d":
-                        if (Block_Xray.d_p.contains(player.getName())) {
-                            Block_Xray.d_p.remove(player.getName());
-                        } else {
-                            Block_Xray.d_p.add(player.getName());
-                        }
-                        break;
-                    case "i":
-                        if (Block_Xray.i_p.contains(player.getName())) {
-                            Block_Xray.i_p.remove(player.getName());
-                        } else {
-                            Block_Xray.i_p.add(player.getName());
-                        }
-                        break;
-                    case "r":
-                        if (Block_Xray.r_p.contains(player.getName())) {
-                            Block_Xray.r_p.remove(player.getName());
-                        } else {
-                            Block_Xray.r_p.add(player.getName());
-                        }
-                        break;
-                    case "e":
-                        if (Block_Xray.e_p.contains(player.getName())) {
-                            Block_Xray.e_p.remove(player.getName());
-                        } else {
-                            Block_Xray.e_p.add(player.getName());
-                        }
-                        break;
-                    case "g":
-                        if (Block_Xray.g_p.contains(player.getName())) {
-                            Block_Xray.g_p.remove(player.getName());
-                        } else {
-                            Block_Xray.g_p.add(player.getName());
-                        }
-                        break;
-                    default:
-                        player.sendMessage("Invalid command");
-                        break;
-                }
-                player.performCommand("xray");
-                return true;
-            }else {
-
-                String i_command = "/xray i";
-                TextComponent i_component = new TextComponent(ChatColor.GRAY + "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nIron" + ChatColor.WHITE + ": " + (Block_Xray.i_p.contains(player.getName())? "on" : "off"));
-                i_component.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND,i_command));
-                String g_command = "/xray g";
-                TextComponent g_component = new TextComponent(ChatColor.GOLD + "Gold" + ChatColor.WHITE + ": " + (Block_Xray.g_p.contains(player.getName())? "on" : "off"));
-                g_component.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND,g_command));
-                String d_command = "/xray d";
-                TextComponent d_component = new TextComponent(ChatColor.AQUA + "Diamond" + ChatColor.WHITE + ": " + (Block_Xray.d_p.contains(player.getName())? "on" : "off"));
-                d_component.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND,d_command));
-                String e_command = "/xray e";
-                TextComponent e_component = new TextComponent(ChatColor.GREEN + "Emerald" + ChatColor.WHITE + ": " + (Block_Xray.e_p.contains(player.getName())? "on" : "off"));
-                e_component.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND,e_command));
-                String r_command = "/xray r";
-                TextComponent r_component = new TextComponent(ChatColor.RED + "RedStone" + ChatColor.WHITE + ": " + (Block_Xray.r_p.contains(player.getName())? "on" : "off"));
-                r_component.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND,r_command));
-                player.spigot().sendMessage(i_component);
-                player.spigot().sendMessage(g_component);
-                player.spigot().sendMessage(d_component);
-                player.spigot().sendMessage(e_component);
-                player.spigot().sendMessage(r_component);
+        if (args.length == 1 && args[0].equalsIgnoreCase("reload")) {
+            if (!sender.hasPermission("blockxray.reload")) {
+                sender.sendMessage(messages.prefixed(sender, "no-permission"));
                 return true;
             }
+            plugin.reload();
+            sender.sendMessage(messages.prefixed(sender, "reloaded"));
+            return true;
         }
-        return false;
+
+        if (!(sender instanceof Player)) {
+            sender.sendMessage(messages.prefixed(sender, "player-only"));
+            return true;
+        }
+        Player player = (Player) sender;
+
+        if (args.length == 0) {
+            sendMenu(player);
+            return true;
+        }
+
+        String arg = args[0].toLowerCase();
+        if (arg.equals("all")) {
+            manager.enableAll(player);
+            player.sendMessage(messages.prefixed(player, "all-on"));
+        } else if (arg.equals("off")) {
+            manager.disable(player);
+            player.sendMessage(messages.prefixed(player, "all-off"));
+        } else {
+            OreType type = OreType.fromName(arg);
+            if (type == null) {
+                player.sendMessage(messages.prefixed(player, "unknown-ore", args[0]));
+                return true;
+            }
+            boolean enabled = manager.toggle(player, type);
+            player.sendMessage(messages.prefixed(player, "toggled", oreLabel(player, type),
+                    messages.get(player, enabled ? "state-on" : "state-off")));
+        }
+        // GUI 代わりのメニューをクリックで操作した時は、メニューを出し直す
+        if (args.length >= 2 && args[1].equals("menu")) {
+            sendMenu(player);
+        }
+        return true;
     }
 
+    private void sendMenu(Player player) {
+        player.sendMessage(messages.get(player, "menu-header"));
+
+        ComponentBuilder line = new ComponentBuilder();
+        int count = 0;
+        for (OreType type : OreType.values()) {
+            boolean on = manager.isEnabled(player, type);
+            String name = messages.oreName(player, type);
+            line.append(button(
+                    (on ? ChatColor.GREEN + "■ " : ChatColor.DARK_GRAY + "□ ") + oreLabel(player, type),
+                    "/xray " + type.id + " menu",
+                    messages.get(player, on ? "menu-hover-disable" : "menu-hover-enable", name)));
+            line.append("   ", ComponentBuilder.FormatRetention.NONE);
+            if (++count % 4 == 0) {
+                player.spigot().sendMessage(line.create());
+                line = new ComponentBuilder();
+            }
+        }
+        if (count % 4 != 0) {
+            player.spigot().sendMessage(line.create());
+        }
+
+        player.spigot().sendMessage(new ComponentBuilder()
+                .append(button(messages.get(player, "button-all-on"), "/xray all menu",
+                        messages.get(player, "hover-all-on")))
+                .append("  ", ComponentBuilder.FormatRetention.NONE)
+                .append(button(messages.get(player, "button-all-off"), "/xray off menu",
+                        messages.get(player, "hover-all-off")))
+                .create());
+    }
+
+    private String oreLabel(Player player, OreType type) {
+        return type.chatColor + messages.oreName(player, type);
+    }
+
+    private static BaseComponent[] button(String text, String command, String hover) {
+        TextComponent component = new TextComponent(text);
+        component.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, command));
+        component.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text(hover)));
+        return new BaseComponent[]{component};
+    }
 }

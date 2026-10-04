@@ -1,0 +1,16 @@
+# メッセージの言語 / Message language
+#   auto : プレイヤーのゲームの言語設定に合わせる (日本語以外は英語)
+#          follow each player's game language (falls back to English)
+#   ja   : 日本語
+#   en   : English
+# 文は plugins/Block_Xray/lang/ の中のファイルで変更できます
+language: auto
+
+# 鉱石を探す範囲 (プレイヤーを中心とした半径・ブロック数)
+radius: 16
+
+# 周囲を再スキャンする間隔 (tick, 20tick = 1秒)
+update-interval: 20
+
+# 1人あたりに表示する発光ブロックの上限 (重くなりすぎないように)
+max-displays: 1500
